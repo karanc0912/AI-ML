@@ -1,128 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mini AI Chatbot</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
-      background-size: cover;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1;
-    }
-    .chat-container {
-      position: relative;
-      z-index: 2;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      padding: 28px;
-      width: 92%;
-      max-width: 420px;
-      text-align: center;
-      backdrop-filter: blur(8px);
-    }
-    h2 {
-      margin: 0 0 16px;
-      color: #333;
-    }
-    form {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    input[type="text"] {
-      flex: 1 1 240px;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      outline: none;
-      transition: 0.3s;
-    }
-    input[type="text"]:focus {
-      border-color: #2575fc;
-      box-shadow: 0 0 8px rgba(37,117,252,0.5);
-    }
-    button {
-      padding: 12px 18px;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: transform 0.2s ease, background 0.3s;
-    }
-    button:hover {
-      transform: scale(1.03);
-      background: linear-gradient(135deg, #2575fc, #6a11cb);
-    }
-    .reply {
-      margin-top: 16px;
-      font-size: 18px;
-      color: #444;
-      padding: 14px;
-      border-radius: 10px;
-      background: #f4f4f4;
-      min-height: 40px;
-      word-break: break-word;
-    }
-    .error {
-      margin: 10px 0 0;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #ffeaea;
-      color: #7a1313;
-      border: 1px solid #f5c2c7;
-      font-size: 14px;
-      text-align: left;
-    }
-    .sr-only {
-      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Classifier</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://www.w3schools.com/w3images/forest.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #FFD700;
+            font-size: 1rem;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        button {
+            background-color: #FFD700;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #FFA500;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+    </style>
 </head>
 <body>
-  <div class="overlay" aria-hidden="true"></div>
-
-  <div class="chat-container" role="region" aria-label="Mini AI Chatbot">
-    <h2>💬 Mini AI Chatbot</h2>
-
-    <form method="POST" action="{{ url_for('chat') }}" novalidate>
-      <label for="message" class="sr-only">Your message</label>
-      <input
-        type="text"
-        id="message"
-        name="message"
-        placeholder="Type your question..."
-        value="{{ request.form.get('message','') }}"
-        autocomplete="off"
-        required
-        aria-required="true"
-      />
-      <button type="submit">Ask</button>
-    </form>
-
-    {% if error %}
-      <div class="error" role="alert">{{ error }}</div>
-    {% endif %}
-
-    <div class="reply" aria-live="polite">{{ reply }}</div>
-  </div>
+    <div class="container">
+        <h2>Email Spam Detection</h2>
+        <form method="POST">
+            <textarea name="email" placeholder="Paste email text here..."></textarea><br><br>
+            <button type="submit">Check</button>
+        </form>
+        <h3>{{ result }}</h3>
+    </div>
+    <div class="footer">
+        <p>Powered by AI | 2025</p>
+    </div>
 </body>
 </html>
