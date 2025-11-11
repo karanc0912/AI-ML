@@ -1,18 +1,37 @@
-from flask import Flask, render_template, request
+from flask import Flask, request, render_template
 
-app = Flask(__name__)
+app = Flask(__name__)  # <-- should be __name__, not _name_
 
 @app.route("/", methods=["GET", "POST"])
-def classify():
-    result = ""
+def chat():
+    reply = ""
     if request.method == "POST":
-        email = request.form["email"].lower()
-        spam_words= ["win", "offer", "free", "lottery", "click", "money", "urgent"]
-        if any(word in email for word in spam_words):
-            result = "🚨 Spam Email Detected!"
+        user_input = request.form["message"].lower()
+
+        if "how are you" in user_input:
+            reply = "I am fine."
+        elif "what is your name" in user_input:
+            reply = "I am a simple AI chatbot."
+        elif "who created you" in user_input:
+            reply = "I was created using Python and Flask."
+        elif "what is python" in user_input:
+            reply = "Python is a popular programming language."
+        elif "what is ai" in user_input:
+            reply = "AI means Artificial Intelligence."
+        elif "tell me a joke" in user_input:
+            reply = "Why don’t robots get tired? Because they recharge!"
+        elif "bye" in user_input or "goodbye" in user_input:
+            reply = "Goodbye! Have a nice day."
+        elif "what is 2+2" in user_input:
+            reply = "2 + 2 is 4."
+        elif "thank you" in user_input:
+            reply = "You’re welcome!"
+        elif "what is your purpose" in user_input:
+            reply = "My purpose is to help answer your questions."
         else:
-            result = "✅ Not Spam (Safe Email)"
-    return render_template("index.html", result=result)
+            reply = "I don’t understand yet."
+
+    return render_template("index.html", reply=reply)
 
 if __name__ == "__main__":
     app.run(debug=True)
